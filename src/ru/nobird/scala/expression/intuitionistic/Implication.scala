@@ -4,7 +4,7 @@ package ru.nobird.scala.expression.intuitionistic
 /**
   * Created by ruslandavletshin on 01/03/2017.
   */
-class Implication(left: TypeExpression, right: TypeExpression) extends TypeExpression("(" + left + " -> " + right + ")") {
+case class Implication(left: TypeExpression, right: TypeExpression) extends TypeExpression("(" + left + " -> " + right + ")") {
 
     override def ==(that: TypeExpression): Boolean = that match {
         case impl: Implication => left == impl.getLeft && right == impl.getRight

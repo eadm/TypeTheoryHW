@@ -2,7 +2,7 @@ package ru.nobird.scala.expression.intuitionistic
 /**
   * Created by ruslandavletshin on 01/03/2017.
   */
-class TypeVariable(x: String) extends TypeExpression(x) {
+case class TypeVariable(x: String) extends TypeExpression(x) {
 
     def getVar: String = x
 

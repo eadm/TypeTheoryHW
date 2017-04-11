@@ -5,7 +5,7 @@ import ru.nobird.scala.expression.intuitionistic.{Equation, TypeExpression, Type
 /**
   * Created by ruslandavletshin on 21/06/16.
   */
-class Variable(x: String) extends LambdaExpression(x) {
+case class Variable(x: String) extends LambdaExpression(x) {
     override def betaReduction(vars: Map[String, LambdaExpression]):LambdaExpression =
         vars.get(x) match {
             case Some(e:LambdaExpression) => e

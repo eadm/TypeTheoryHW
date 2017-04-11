@@ -5,29 +5,29 @@ import ru.nobird.scala.expression.intuitionistic.{Equation, Implication, TypeExp
 /**
   * Created by ruslandavletshin on 21/06/16.
   */
-class Application(left: LambdaExpression, right: LambdaExpression) extends LambdaExpression("" + left + " "  + " " + right + "") {
+case class Application(left: LambdaExpression, right: LambdaExpression) extends LambdaExpression("(" + left + " "  + " " + right + ")") {
 
     override def betaReduction(vars: Map[String, LambdaExpression]): LambdaExpression = (left, vars.isEmpty) match {
-        case (lambda: Lambda, true) => left.betaReduction(Map((lambda.v.toString, right)))
+        case (Lambda(v, _), true) => left.betaReduction(Map((v.toString, right)))
         case (_, true) =>
             val l = left.betaReduction(vars)
             if (l.toString == left.toString)
-                new Application(l, right.betaReduction(vars))
+                Application(l, right.betaReduction(vars))
             else
-                new Application(l, right)
-        case (_, false) => new Application(left.betaReduction(vars), right.betaReduction(vars))
+                Application(l, right)
+        case (_, false) => Application(left.betaReduction(vars), right.betaReduction(vars))
     }
 
 
 
-    override def escapeBrackets(): Application = new Application(left.escapeBrackets(), right.escapeBrackets())
+    override def escapeBrackets(): Application = Application(left.escapeBrackets(), right.escapeBrackets())
 
     override lazy val isBetaRedex: Boolean = left.isInstanceOf[Lambda]
     override lazy val isInNormalForm: Boolean = !isBetaRedex && left.isInNormalForm && right.isInNormalForm
 
     def pack(e: LambdaExpression): Application = left match { // to maintain left associativity of application
-        case a: Application => new Application(a.pack(e), right)
-        case _ => new Application(new Application(e, left), right)
+        case a: Application => Application(a.pack(e), right)
+        case _ => Application(Application(e, left), right)
     }
 
     override def getTypeAnnotation(cache: Map[String, TypeExpression]): (List[Equation], TypeExpression) = {

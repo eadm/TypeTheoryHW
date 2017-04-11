@@ -4,9 +4,6 @@ import ru.nobird.scala.expression.Expression
 import ru.nobird.scala.expression.intuitionistic.{Equation, EquationSystem, TypeExpression}
 
 
-/**
-  * Created by ruslandavletshin on 21/06/16.
-  */
 abstract class LambdaExpression(s: String) extends Expression(s) {
     def betaReduction(vars: Map[String, LambdaExpression]): LambdaExpression
 
@@ -24,10 +21,7 @@ object LambdaExpression {
         var cc = 0
         while (!e.isInNormalForm) {
             e = e.betaReduction(Map())
-            cc+=1
-//            println()
-//            println()
-//            println(e)
+            cc += 1
             if (cc % 1000 == 0) println(cc)
         }
         e
@@ -43,37 +37,25 @@ object LambdaExpression {
     val alph = Array("𝛂", "𝛃", "𝛄", "𝛅", "𝛆", "𝛇", "𝛈", "𝛉", "𝛊",
         "𝛋", "𝛌", "𝛍", "𝛎", "𝛏", "𝛐", "𝛑", "𝛒", "𝛓", "𝛔", "𝛕", "𝛖", "𝛗", "𝛘", "𝛚", "𝛙")
 
-//    def getNextTypeVar: String = "a_" + getNext
-    def getNextTypeVar: String = alph(getNext)
+    def getNextTypeVar: String = "a_" + getNext
+//    def getNextTypeVar: String = alph(getNext)
 
 
-    def resolveEquationSystem(s: EquationSystem): Map[String, TypeExpression] = {
-
-        var r = s
-        println(r)
-
-        while (!r.isSolved) {
-            r = r.next().get
-            println(r)
+    def resolveEquationSystem(s: EquationSystem): Option[Map[String, TypeExpression]] =
+        if (s.isSolved) {
+            Some(s.vars)
+        } else {
+            s.next() match {
+                case Some(r) => resolveEquationSystem(r)
+                case None => None
+            }
         }
 
-        r.vars
-    }
-
-    def inferenceType(arg: LambdaExpression): Unit = {
-        val tmp = arg.getTypeAnnotation(Map())
-
-        println("\nSystem: ")
-        println(tmp._1)
-
-        println("\nTau: ")
-        println(tmp._2)
-
-        println()
-
-        val S = resolveEquationSystem(new EquationSystem(tmp._1))
-        println(S)
-
-        println(tmp._2.insertTypeExpression(S))
+    def inferenceType(arg: LambdaExpression): Option[TypeExpression] = {
+        val (e, t) = arg.getTypeAnnotation(Map())
+        resolveEquationSystem(new EquationSystem(e)) match {
+            case Some(s) => Some(t.insertTypeExpression(s))
+            case None => None
+        }
     }
 }

@@ -16,4 +16,6 @@ class UniversalQuantifier(private val v: TypeVariable, private val e: TypeExpres
 
     override def getVars: Set[String] = e.getVars
     override def getFreeVars: Set[String] = e.getFreeVars - v.toString
+
+    override def unwrap(): TypeExpression = e
 }

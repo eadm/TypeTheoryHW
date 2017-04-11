@@ -16,4 +16,8 @@ abstract class TypeExpression(s: String) extends Expression(s) {
     def getVars: Set[String]
 
     def getFreeVars: Set[String]
+
+    def -> (that: TypeExpression) = Implication(this, that)
+
+    def unwrap(): TypeExpression = this
 }

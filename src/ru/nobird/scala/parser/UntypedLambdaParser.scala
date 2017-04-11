@@ -21,7 +21,7 @@ object UntypedLambdaParser extends StdTokenParsers with PackratParsers {
 
     lazy val expr: PackratParser[LambdaExpression]     = lambda | application | variable | brackets
 
-    lazy val lambda: PackratParser[Lambda]             = "\\" ~> variable ~ "." ~ expr ^^ { case v ~ "." ~ e  => new Lambda(v, e) }
+    lazy val lambda: PackratParser[Lambda]             = "\\" ~> variable ~ "." ~ expr ^^ { case v ~ "." ~ e  => Lambda(v, e) }
 
     lazy val application: PackratParser[Application]   = expr ~ expr ^^ {
         case left ~ right =>
@@ -31,9 +31,9 @@ object UntypedLambdaParser extends StdTokenParsers with PackratParsers {
             }
     }
 
-    lazy val variable: PackratParser[Variable]         = ident ^^ (x => new Variable(x))
+    lazy val variable: PackratParser[Variable]         = ident ^^ Variable
 
-    lazy val brackets: PackratParser[LambdaExpression] = "(" ~> expr <~ ")" ^^ (x => new Brackets(x))
+    lazy val brackets: PackratParser[LambdaExpression] = "(" ~> expr <~ ")" ^^ Brackets
 
 
     def parse(source: String): ParseResult[LambdaExpression] = {

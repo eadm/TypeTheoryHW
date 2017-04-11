@@ -22,7 +22,7 @@ object HMLambdaParser extends StdTokenParsers with PackratParsers  {
 
     lazy val expression: PackratParser[LambdaExpression] =
         "let" ~ variable ~ "=" ~ expression ~ "in" ~ expression ^^ {
-            case "let" ~ v ~ "=" ~ e1 ~ "in" ~ e2 => new Let(v, e1, e2)
+            case "let" ~ v ~ "=" ~ e1 ~ "in" ~ e2 => Let(v, e1, e2)
         } | abstraction
 
     lazy val abstraction: PackratParser[LambdaExpression] =
@@ -38,7 +38,7 @@ object HMLambdaParser extends StdTokenParsers with PackratParsers  {
         } | application
 
     lazy val lambda: PackratParser[Lambda] = "\\" ~> variable ~ "." ~ abstraction ^^ {
-        case x ~ "." ~ v => new Lambda(x, v)
+        case x ~ "." ~ v => Lambda(x, v)
     }
 
     lazy val application: PackratParser[LambdaExpression] =
@@ -51,8 +51,8 @@ object HMLambdaParser extends StdTokenParsers with PackratParsers  {
         } | term
 
     lazy val term: PackratParser[LambdaExpression] = brackets | variable
-    lazy val brackets: PackratParser[LambdaExpression] = "(" ~> expression <~ ")" ^^ (x => new Brackets(x))
-    lazy val variable: PackratParser[Variable] = ident ^^ (x => new Variable(x))
+    lazy val brackets: PackratParser[LambdaExpression] = "(" ~> expression <~ ")" ^^ Brackets
+    lazy val variable: PackratParser[Variable] = ident ^^ Variable
 
     def parse(source: String): ParseResult[LambdaExpression] = {
         val tokens = new lexical.Scanner(source)
