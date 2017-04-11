@@ -15,8 +15,12 @@ class HW3 extends HW {
     override def solve(in: String): String =
         HMLambdaParser.parse(in) match {
             case Success(expr, _) =>
-                val (ctx, t) = W(Context(HashMap[LambdaExpression, TypeExpression]()), expr.escapeBrackets())
-                ctx(t) + "\n" + ctx
+                try {
+                    val (ctx, t) = W(Context(HashMap[LambdaExpression, TypeExpression]()), expr.escapeBrackets())
+                    ctx(t).toString
+                } catch {
+                    case _: TypeInferenceException => "Лямбда-выражение не имеет типа."
+                }
             case err: NoSuccess => err.toString
         }
 
