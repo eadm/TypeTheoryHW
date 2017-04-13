@@ -14,4 +14,9 @@ case class Let (x: Variable, a: LambdaExpression, b: LambdaExpression)
     override def getTypeAnnotation(cache: Map[String, TypeExpression]): (List[Equation], TypeExpression) = null
 
     override def escapeBrackets(): LambdaExpression = Let(x, a.escapeBrackets(), b.escapeBrackets())
+
+    override def getAllVars: Set[String] = a.getAllVars ++ b.getAllVars + x.toString
+
+    override def rename(s: Map[String, String]): LambdaExpression =
+        Let(x.rename(s), a.rename(s), b.rename(s))
 }

@@ -12,4 +12,8 @@ case class Brackets(e: LambdaExpression) extends LambdaExpression("(" + e + ")")
 
     override def getTypeAnnotation(cache: Map[String, TypeExpression]): (List[Equation], TypeExpression) = e.getTypeAnnotation(cache)
     override def escapeBrackets(): LambdaExpression = e.escapeBrackets()
+
+    override def getAllVars: Set[String] = e.getAllVars
+
+    override def rename(s: Map[String, String]): LambdaExpression = e.rename(s)
 }

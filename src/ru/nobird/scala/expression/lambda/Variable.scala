@@ -17,11 +17,18 @@ case class Variable(x: String) extends LambdaExpression(x) {
 
     override def escapeBrackets(): LambdaExpression = this
 
+    override def getAllVars: Set[String] = Set()
+
+    override def rename(s: Map[String, String]): Variable = s.get(x) match {
+        case Some(x: String) => Variable(x)
+        case _ => this
+    }
+
     override def getTypeAnnotation(cache: Map[String, TypeExpression]): (List[Equation], TypeExpression) =
         cache.get(x) match {
             case Some(t) => (List(), t)
             case _ =>
-                val t = new TypeVariable(LambdaExpression.getNextTypeVar)
+                val t = TypeVariable(LambdaExpression.getNextTypeVar)
                 (List(), t)
         }
 

@@ -1,6 +1,6 @@
 package ru.nobird.scala.expression.lambda
 
-import ru.nobird.scala.expression.intuitionistic.{Equation, Implication, TypeExpression, TypeVariable}
+import ru.nobird.scala.expression.intuitionistic.{Equation, TypeExpression, TypeVariable}
 
 /**
   * Created by ruslandavletshin on 21/06/16.
@@ -26,11 +26,13 @@ case class Lambda(v: Variable, ex: LambdaExpression) extends LambdaExpression("(
     override val isBetaRedex = false
 
     override def getTypeAnnotation(cache: Map[String, TypeExpression]): (List[Equation], TypeExpression) = {
-        val tt = /*cache.get(v.toString) match {
-            case Some(t) => t
-            case _ => */new TypeVariable(LambdaExpression.getNextTypeVar) // todo: consider to use only this for tracking context
-//        }
-        val (e, t) = ex.getTypeAnnotation(cache + ((v.toString, tt)))
-        (e, new Implication(tt, t))
+        val tx = TypeVariable(LambdaExpression.getNextTypeVar)
+        val (e, tp) = ex.getTypeAnnotation(cache + ((v.toString, tx)))
+        (e, tx -> tp)
     }
+
+    override def getAllVars: Set[String] = ex.getAllVars + v.toString
+
+    override def rename(s: Map[String, String]): LambdaExpression =
+        Lambda(v.rename(s), ex.rename(s))
 }

@@ -16,7 +16,7 @@ case class Context(private val elems: HashMap[LambdaExpression, TypeExpression])
 
     def closure(t: TypeExpression): TypeExpression = {
         def closureConstructor(vars: List[String], t: TypeExpression): TypeExpression = vars match {
-            case x :: xs => new UniversalQuantifier(new TypeVariable(x), closureConstructor(xs, t))
+            case x :: xs => new UniversalQuantifier(TypeVariable(x), closureConstructor(xs, t))
             case List() => t
         }
         closureConstructor((t.getFreeVars -- elems.values.toSet.foldLeft(Set[String]()) {_ ++ _.getFreeVars}).toList, t)

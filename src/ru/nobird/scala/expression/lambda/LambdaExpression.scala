@@ -13,6 +13,10 @@ abstract class LambdaExpression(s: String) extends Expression(s) {
     def getTypeAnnotation(cache: Map[String, TypeExpression]): (List[Equation], TypeExpression)
 
     def escapeBrackets(): LambdaExpression
+
+    def getAllVars: Set[String]
+
+    def rename(s: Map[String, String]): LambdaExpression
 }
 
 object LambdaExpression {
@@ -46,13 +50,20 @@ object LambdaExpression {
             Some(s.vars)
         } else {
             s.next() match {
-                case Some(r) => resolveEquationSystem(r)
+                case Some(r) => {
+                    println("==========================")
+                    println(r)
+                    resolveEquationSystem(r)
+                }
                 case None => None
             }
         }
 
     def inferenceType(arg: LambdaExpression): Option[TypeExpression] = {
         val (e, t) = arg.getTypeAnnotation(Map())
+        println()
+        println(e)
+        println(t)
         resolveEquationSystem(new EquationSystem(e)) match {
             case Some(s) => Some(t.insertTypeExpression(s))
             case None => None

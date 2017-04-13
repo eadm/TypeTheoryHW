@@ -28,8 +28,8 @@ case class Equation(left: TypeExpression, right: TypeExpression) extends TypeExp
     def expandEquations: List[Equation] = expandEquations(left, right)
 
     private def expandEquations(left: TypeExpression, right: TypeExpression): List[Equation] = (left, right) match {
-        case (l: TypeVariable, r: TypeVariable) => List(Equation(l, r))
         case (l: Implication, r: Implication) => expandEquations(l.getLeft, r.getLeft) ++ expandEquations(l.getRight, r.getRight)
+        case (l, r) => List(Equation(l, r))
     }
 
     override def getVars: Set[String] = left.getVars ++ right.getVars

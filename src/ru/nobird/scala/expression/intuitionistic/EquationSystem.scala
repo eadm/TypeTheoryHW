@@ -9,15 +9,23 @@ class EquationSystem(list: List[Equation]) {
     lazy val vars: Map[String, TypeExpression] = constructMapOfVariables(list)
 
     lazy val solvable: Boolean =
-        list.forall((e) => {
-            (e.getLeft.getVars.size == e.getRight.getVars.size && e.getLeft == e.getRight) ||
-                (e.getLeft.isInstanceOf[TypeVariable] && !e.getRight.getVars.contains(e.getLeft.getVars.head))
-        })
-
+        list.forall {
+            case Equation(left, right) =>
+                !(if (left.isInstanceOf[TypeVariable]) {
+                    right.getVars.contains(left.toString)
+                } else {
+                    left.getVars.size == right.getVars.size && !(left == right)
+                })
+        }
 
     def next(): Option[EquationSystem] =
         if (solvable) Some(new EquationSystem(iterate(list)))
-        else None
+        else {
+
+            println("Non solvable")
+            println(list)
+            None
+        }
 
 
 
@@ -26,7 +34,7 @@ class EquationSystem(list: List[Equation]) {
             val vl = e.getLeft.getVars
             val v = vl.head
 
-            if (vl.size != 1 || !list.forall((e2) =>
+            if (!e.getLeft.isInstanceOf[TypeVariable] || !list.forall((e2) =>
                 !e2.getRight.getVars.contains(v) &&
                     (!e2.getLeft.getVars.contains(v) || (e2.getLeft.getVars.contains(v) && e ==== e2))
             ))
@@ -44,11 +52,11 @@ class EquationSystem(list: List[Equation]) {
                 res
             else if (x.getRight.isInstanceOf[TypeVariable] && !x.getLeft.isInstanceOf[TypeVariable])
                 x.reverse +: res
-            else if (x.getRight == x.getLeft && !x.getRight.isInstanceOf[TypeVariable]) // структурное равенство
+            else if (!x.getRight.isInstanceOf[TypeVariable]) // структурное равенство
                 x.expandEquations ++ res
             else {
                 val vs = x.getVars
-                val ff = vars.filter((p) => new Equation(new TypeVariable(p._1), p._2).toString != x.toString && vs.contains(p._1))
+                val ff = vars.filter((p) => Equation(TypeVariable(p._1), p._2).toString != x.toString && vs.contains(p._1))
                 x.insertTypeExpression(ff) +: res
             }
         case List() => List()
