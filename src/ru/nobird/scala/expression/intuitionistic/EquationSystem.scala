@@ -13,9 +13,11 @@ class EquationSystem(list: List[Equation]) {
             case Equation(left, right) =>
                 !(if (left.isInstanceOf[TypeVariable]) {
                     right.getVars.contains(left.toString)
-                } else {
-                    left.getVars.size == right.getVars.size && !(left == right)
-                })
+                } else false
+//                else {
+//                    left.getVars.size == right.getVars.size && !(left == right)
+//                }
+                )
         }
 
     def next(): Option[EquationSystem] =
@@ -52,7 +54,7 @@ class EquationSystem(list: List[Equation]) {
                 res
             else if (x.getRight.isInstanceOf[TypeVariable] && !x.getLeft.isInstanceOf[TypeVariable])
                 x.reverse +: res
-            else if (!x.getRight.isInstanceOf[TypeVariable]) // структурное равенство
+            else if (x.getRight.isInstanceOf[Implication] && x.getLeft.isInstanceOf[Implication]) // структурное равенство
                 x.expandEquations ++ res
             else {
                 val vs = x.getVars
