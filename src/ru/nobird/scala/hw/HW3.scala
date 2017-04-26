@@ -4,7 +4,7 @@ import ru.nobird.scala.expression.hm.{Context, Substitution, TypeInferenceExcept
 import ru.nobird.scala.expression.lambda._
 import ru.nobird.scala.parser.HMLambdaParser
 import HMLambdaParser.{NoSuccess, Success}
-import ru.nobird.scala.expression.intuitionistic.{Implication, TypeExpression, TypeVariable}
+import ru.nobird.scala.expression.intuitionistic._
 
 import scala.collection.immutable.HashMap
 
@@ -29,13 +29,25 @@ class HW3 extends HW {
         expr match {
 
             case Application(e1, e2) =>
+                println("--------STR")
+                println(expr)
                 val (s1, t1) = W(ctx, e1)
                 val (s2, t2) = W(s1(ctx), e2)
+
+                println(s1)
+                println(t1)
+                println()
+
+                println(s2)
+                println(t2)
 
                 val beta = TypeVariable(LambdaExpression.getNextTypeVar)
                 val v = unify(s2(t1), t2 -> beta)
 
                 val s = v(s1(s2))
+                println()
+                println(s)
+                println("--------END")
                 (s, s(beta))
 
 
@@ -62,21 +74,32 @@ class HW3 extends HW {
                 val (s1, t1) = W(ctx, e1)
                 val (s2, t2) = W(s1(ctx - x) + (x, s1(ctx.closure(t1))) , e2)
 
+
                 (s2(s1), t2)
         }
 
 
 
-    private def unify(t1: TypeExpression, t2: TypeExpression): Substitution = (t1, t2) match {
-        case (Implication(l1, r1), Implication(l2, r2)) =>
-            unify(l1, l2) ++! unify(r1, r2)
-
-        case (TypeVariable(x), _) =>
-            Substitution(Map(x -> t2))
-
-        case (_, TypeVariable(x)) =>
-            Substitution(Map(x -> t1))
+    private def unify(t1: TypeExpression, t2: TypeExpression): Substitution = {
+        val ss = new EquationSystem(List(Equation(t1, t2)))
+        println(Equation(t1, t2))
+        LambdaExpression.resolveEquationSystem(ss) match {
+            case Some(sub) => Substitution(sub)
+            case _ => throw new TypeInferenceException("can't solve equation system")
+        }
     }
+//    (t1, t2) match {
+//            case (Implication(l1, r1), Implication(l2, r2)) =>
+//                //            new EquationSystem(List(Equation(t1, t2)))
+//                unify(l1, l2) ++! unify(r1, r2)
+//
+//            case (TypeVariable(x), _) =>
+//                Substitution(Map(x -> t2))
+//
+//            case (_, TypeVariable(x)) =>
+//                Substitution(Map(x -> t1))
+//        }
+//    }
 
 
 }

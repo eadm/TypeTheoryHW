@@ -11,7 +11,7 @@ class EquationSystem(list: List[Equation]) {
     lazy val solvable: Boolean =
         list.forall {
             case Equation(left, right) =>
-                !(if (left.isInstanceOf[TypeVariable]) {
+                !(if (left.isInstanceOf[TypeVariable] && !(left ==== right)) {
                     right.getVars.contains(left.toString)
                 } else false
 //                else {

@@ -51,8 +51,8 @@ object LambdaExpression {
         } else {
             s.next() match {
                 case Some(r) => {
-                    println("==========================")
-                    println(r)
+//                    println("==========================")
+//                    println(r)
                     resolveEquationSystem(r)
                 }
                 case None => None
