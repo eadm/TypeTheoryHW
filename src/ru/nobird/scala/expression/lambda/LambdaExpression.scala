@@ -5,7 +5,9 @@ import ru.nobird.scala.expression.intuitionistic.{Equation, EquationSystem, Type
 
 
 abstract class LambdaExpression(s: String) extends Expression(s) {
-    def betaReduction(vars: Map[String, LambdaExpression]): LambdaExpression
+    def substitute(v: String, expr: LambdaExpression): LambdaExpression
+
+    def betaReduction(): LambdaExpression
 
     val isInNormalForm: Boolean
     val isBetaRedex: Boolean
@@ -24,7 +26,7 @@ object LambdaExpression {
         var e = arg
         var cc = 0
         while (!e.isInNormalForm) {
-            e = e.betaReduction(Map())
+            e = e.betaReduction
             cc += 1
             if (cc % 1000 == 0) println(cc)
         }

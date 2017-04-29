@@ -4,19 +4,22 @@ import ru.nobird.scala.expression.intuitionistic.{Equation, TypeExpression, Type
 
 case class Application(left: LambdaExpression, right: LambdaExpression) extends LambdaExpression("(" + left + " "  + " " + right + ")") {
 
-    override def betaReduction(vars: Map[String, LambdaExpression]): LambdaExpression = (left, vars.isEmpty) match {
-        case (Lambda(v, _), true) =>
+
+    override def substitute(v: String, expr: LambdaExpression): LambdaExpression =
+        Application(left.substitute(v, expr), right.substitute(v, expr))
+
+    override def betaReduction(): LambdaExpression = left match {
+        case Lambda(v, ex) =>
             val collision = left.getAllVars & right.getAllVars - v.toString
             val s = collision.map{x => (x, LambdaExpression.getNextTypeVar)}.toMap
-            left.betaReduction(Map((v.toString, right.rename(s))))
+            ex.substitute(v.toString, right.rename(s))
 
-        case (_, true) =>
-            val l = left.betaReduction(vars)
+        case _ =>
+            val l = left.betaReduction()
             if (l.toString == left.toString)
-                Application(l, right.betaReduction(vars))
+                Application(l, right.betaReduction())
             else
                 Application(l, right)
-        case (_, false) => Application(left.betaReduction(vars), right.betaReduction(vars))
     }
 
 

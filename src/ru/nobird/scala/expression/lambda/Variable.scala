@@ -6,11 +6,15 @@ import ru.nobird.scala.expression.intuitionistic.{Equation, TypeExpression, Type
   * Created by ruslandavletshin on 21/06/16.
   */
 case class Variable(x: String) extends LambdaExpression(x) {
-    override def betaReduction(vars: Map[String, LambdaExpression]):LambdaExpression =
-        vars.get(x) match {
-            case Some(e:LambdaExpression) => e
-            case _ => this
-        }
+
+
+    override def substitute(v: String, expr: LambdaExpression): LambdaExpression =
+        if (v == x)
+            expr
+        else
+            this
+
+    override def betaReduction():LambdaExpression = this
 
     override val isBetaRedex    = false
     override val isInNormalForm = true

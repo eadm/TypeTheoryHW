@@ -6,7 +6,9 @@ import ru.nobird.scala.expression.intuitionistic.{Equation, TypeExpression}
   */
 case class Let (x: Variable, a: LambdaExpression, b: LambdaExpression)
     extends LambdaExpression("let " + x + " = [" + a + "] in [" + b + "]") {
-    override def betaReduction(vars: Map[String, LambdaExpression]): LambdaExpression = null
+
+    override def substitute(v: String, expr: LambdaExpression): LambdaExpression = this
+    override def betaReduction(): LambdaExpression = this
 
     override val isInNormalForm: Boolean = false
     override val isBetaRedex: Boolean = false

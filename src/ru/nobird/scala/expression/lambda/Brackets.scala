@@ -5,7 +5,9 @@ import ru.nobird.scala.expression.intuitionistic.{Equation, TypeExpression}
   * Created by ruslandavletshin on 03/03/2017.
   */
 case class Brackets(e: LambdaExpression) extends LambdaExpression("(" + e + ")") {
-    override def betaReduction(vars: Map[String, LambdaExpression]): LambdaExpression = e.betaReduction(vars)
+
+    override def substitute(v: String, expr: LambdaExpression): LambdaExpression = e.substitute(v, expr)
+    override def betaReduction(): LambdaExpression = e.betaReduction()
 
     override lazy val isInNormalForm: Boolean = e.isInNormalForm
     override lazy val isBetaRedex: Boolean = e.isBetaRedex

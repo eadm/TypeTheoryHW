@@ -7,14 +7,14 @@ import ru.nobird.scala.expression.intuitionistic.{Equation, TypeExpression, Type
   */
 case class Lambda(v: Variable, ex: LambdaExpression) extends LambdaExpression("(\\" + v.toString + "." + ex.toString + ")") {
 
-    override def betaReduction(vars: Map[String, LambdaExpression]): LambdaExpression =
-        if (vars.contains(v.toString))
-            if (vars.contains(v.toString + " _"))
-                Lambda(v, ex.betaReduction(Map()))
-            else
-                ex.betaReduction(vars + ((v.toString + " _", null)))
+
+    override def substitute(variable: String, expr: LambdaExpression): LambdaExpression =
+        if (variable == v.toString)
+            this
         else
-            Lambda(v, ex.betaReduction(vars))
+            ex.substitute(variable, expr)
+
+    override def betaReduction(): LambdaExpression = Lambda(v, ex.betaReduction())
 
 
 
