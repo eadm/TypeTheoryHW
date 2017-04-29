@@ -8,26 +8,28 @@ case class Application(left: LambdaExpression, right: LambdaExpression) extends 
     override def substitute(v: String, expr: LambdaExpression): LambdaExpression =
         Application(left.substitute(v, expr), right.substitute(v, expr))
 
-    override def betaReduction(): LambdaExpression = left match {
+    override def betaReduction(): Option[LambdaExpression] = left match {
         case Lambda(v, ex) =>
             val collision = left.getAllVars & right.getAllVars - v.toString
             val s = collision.map{x => (x, LambdaExpression.getNextTypeVar)}.toMap
-            ex.substitute(v.toString, right.rename(s))
+            Some(ex.substitute(v.toString, right.rename(s)))
 
         case _ =>
-            val l = left.betaReduction()
-            if (l.toString == left.toString)
-                Application(l, right.betaReduction())
-            else
-                Application(l, right)
+            left.betaReduction() match {
+                case Some(l) =>
+                    Some(Application(l, right))
+                case _ =>
+                    right.betaReduction() match {
+                        case Some(r) =>
+                            Some(Application(left, r))
+                        case _ => None
+                    }
+            }
     }
 
 
 
     override def escapeBrackets(): Application = Application(left.escapeBrackets(), right.escapeBrackets())
-
-    override lazy val isBetaRedex: Boolean = left.isInstanceOf[Lambda]
-    override lazy val isInNormalForm: Boolean = !isBetaRedex && left.isInNormalForm && right.isInNormalForm
 
     def pack(e: LambdaExpression): Application = left match { // to maintain left associativity of application
         case a: Application => Application(a.pack(e), right)

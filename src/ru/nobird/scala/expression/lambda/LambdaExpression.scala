@@ -7,10 +7,7 @@ import ru.nobird.scala.expression.intuitionistic.{Equation, EquationSystem, Type
 abstract class LambdaExpression(s: String) extends Expression(s) {
     def substitute(v: String, expr: LambdaExpression): LambdaExpression
 
-    def betaReduction(): LambdaExpression
-
-    val isInNormalForm: Boolean
-    val isBetaRedex: Boolean
+    def betaReduction(): Option[LambdaExpression]
 
     def getTypeAnnotation(cache: Map[String, TypeExpression]): (List[Equation], TypeExpression)
 
@@ -25,10 +22,15 @@ object LambdaExpression {
     def normalise(arg: LambdaExpression): LambdaExpression = {
         var e = arg
         var cc = 0
-        while (!e.isInNormalForm) {
-            e = e.betaReduction
-            cc += 1
-            if (cc % 1000 == 0) println(cc)
+        var isNormalised = false
+        while (!isNormalised) {
+            e.betaReduction() match {
+                case Some(expr) =>
+                    e = expr
+                    cc += 1
+                    if (cc % 1000 == 0) println(cc)
+                case _ => isNormalised = true
+            }
         }
         e
     }

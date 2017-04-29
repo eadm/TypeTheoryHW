@@ -14,16 +14,16 @@ case class Lambda(v: Variable, ex: LambdaExpression) extends LambdaExpression("(
         else
             Lambda(v, ex.substitute(variable, expr))
 
-    override def betaReduction(): LambdaExpression = Lambda(v, ex.betaReduction())
+    override def betaReduction(): Option[LambdaExpression] = ex.betaReduction() match {
+        case Some(expr) => Some(Lambda(v, expr))
+        case _ => None
+    }
 
 
 
     override def escapeBrackets(): LambdaExpression =
         Lambda(v, ex.escapeBrackets())
 
-
-    override lazy val isInNormalForm: Boolean = ex.isInNormalForm
-    override val isBetaRedex = false
 
     override def getTypeAnnotation(cache: Map[String, TypeExpression]): (List[Equation], TypeExpression) = {
         val tx = TypeVariable(LambdaExpression.getNextTypeVar)

@@ -8,10 +8,7 @@ case class Let (x: Variable, a: LambdaExpression, b: LambdaExpression)
     extends LambdaExpression("let " + x + " = [" + a + "] in [" + b + "]") {
 
     override def substitute(v: String, expr: LambdaExpression): LambdaExpression = this
-    override def betaReduction(): LambdaExpression = this
-
-    override val isInNormalForm: Boolean = false
-    override val isBetaRedex: Boolean = false
+    override def betaReduction(): Option[LambdaExpression] = None
 
     override def getTypeAnnotation(cache: Map[String, TypeExpression]): (List[Equation], TypeExpression) = null
 

@@ -14,10 +14,7 @@ case class Variable(x: String) extends LambdaExpression(x) {
         else
             this
 
-    override def betaReduction():LambdaExpression = this
-
-    override val isBetaRedex    = false
-    override val isInNormalForm = true
+    override def betaReduction(): Option[LambdaExpression] = None
 
     override def escapeBrackets(): LambdaExpression = this
 
