@@ -12,7 +12,7 @@ case class Lambda(v: Variable, ex: LambdaExpression) extends LambdaExpression("(
         if (variable == v.toString)
             this
         else
-            ex.substitute(variable, expr)
+            Lambda(v, ex.substitute(variable, expr))
 
     override def betaReduction(): LambdaExpression = Lambda(v, ex.betaReduction())
 
