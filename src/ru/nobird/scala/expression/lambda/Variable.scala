@@ -33,4 +33,5 @@ case class Variable(x: String) extends LambdaExpression(x) {
                 (List(), t)
         }
 
+    override def forceToString(): String = x
 }

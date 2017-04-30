@@ -6,6 +6,8 @@ import ru.nobird.scala.expression.intuitionistic.{Equation, TypeExpression}
   */
 case class Brackets(e: LambdaExpression) extends LambdaExpression("(" + e + ")") {
 
+    override def forceToString(): String = "(" + e.forceToString() + ")"
+
     override def substitute(v: String, expr: LambdaExpression): LambdaExpression = e.substitute(v, expr)
     override def betaReduction(): Option[LambdaExpression] = e.betaReduction()
 

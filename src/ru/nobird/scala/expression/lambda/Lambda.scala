@@ -5,17 +5,23 @@ import ru.nobird.scala.expression.intuitionistic.{Equation, TypeExpression, Type
 /**
   * Created by ruslandavletshin on 21/06/16.
   */
-case class Lambda(v: Variable, ex: LambdaExpression) extends LambdaExpression("(\\" + v.toString + "." + ex.toString + ")") {
+case class Lambda(v: Variable, var ex: LambdaExpression) extends LambdaExpression("(\\" + v.toString + "." + ex.toString + ")") {
 
+    override def forceToString(): String =
+        "(\\" + v.forceToString() + "." + ex.forceToString() + ")"
 
     override def substitute(variable: String, expr: LambdaExpression): LambdaExpression =
         if (variable == v.toString)
             this
-        else
-            Lambda(v, ex.substitute(variable, expr))
+        else {
+            ex = ex.substitute(variable, expr)
+            this
+        }
 
     override def betaReduction(): Option[LambdaExpression] = ex.betaReduction() match {
-        case Some(expr) => Some(Lambda(v, expr))
+        case Some(expr) =>
+            ex = expr
+            Some(this)
         case _ => None
     }
 

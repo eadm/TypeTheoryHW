@@ -7,6 +7,9 @@ import ru.nobird.scala.expression.intuitionistic.{Equation, TypeExpression}
 case class Let (x: Variable, a: LambdaExpression, b: LambdaExpression)
     extends LambdaExpression("let " + x + " = [" + a + "] in [" + b + "]") {
 
+    override def forceToString(): String =
+        "let " + x.forceToString() + " = [" + a.forceToString() + "] in [" + b.forceToString() + "]"
+
     override def substitute(v: String, expr: LambdaExpression): LambdaExpression = this
     override def betaReduction(): Option[LambdaExpression] = None
 

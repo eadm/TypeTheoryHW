@@ -7,7 +7,7 @@ import UntypedLambdaParser.{Success, NoSuccess}
 class HW1 extends HW {
     override def solve(in: String): String =
         UntypedLambdaParser.parse(in) match {
-            case Success(expr, _) => LambdaExpression.normalise(expr.escapeBrackets()).toString
+            case Success(expr, _) => LambdaExpression.normalise(expr.escapeBrackets()).forceToString()
             case err: NoSuccess => err.toString
         }
 }

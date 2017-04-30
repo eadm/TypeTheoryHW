@@ -2,11 +2,17 @@ package ru.nobird.scala.expression.lambda
 
 import ru.nobird.scala.expression.intuitionistic.{Equation, TypeExpression, TypeVariable}
 
-case class Application(left: LambdaExpression, right: LambdaExpression) extends LambdaExpression("(" + left + " "  + " " + right + ")") {
+case class Application(var left: LambdaExpression, var right: LambdaExpression) extends LambdaExpression("(" + left + " "  + " " + right + ")") {
 
+    override def forceToString(): String =
+        "(" + left.forceToString() + " "  + " " + right.forceToString() + ")"
 
-    override def substitute(v: String, expr: LambdaExpression): LambdaExpression =
-        Application(left.substitute(v, expr), right.substitute(v, expr))
+    override def substitute(v: String, expr: LambdaExpression): LambdaExpression = {
+        left = left.substitute(v, expr)
+        right = right.substitute(v, expr)
+        this
+    }
+//        Application(left.substitute(v, expr), right.substitute(v, expr))
 
     override def betaReduction(): Option[LambdaExpression] = left match {
         case Lambda(v, ex) =>
@@ -17,11 +23,15 @@ case class Application(left: LambdaExpression, right: LambdaExpression) extends 
         case _ =>
             left.betaReduction() match {
                 case Some(l) =>
-                    Some(Application(l, right))
+                    left = l
+                    Some(this)
+//                    Some(Application(l, right))
                 case _ =>
                     right.betaReduction() match {
                         case Some(r) =>
-                            Some(Application(left, r))
+                            right = r
+                            Some(this)
+//                            Some(Application(left, r))
                         case _ => None
                     }
             }

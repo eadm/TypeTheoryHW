@@ -16,6 +16,8 @@ abstract class LambdaExpression(s: String) extends Expression(s) {
     def getAllVars: Set[String]
 
     def rename(s: Map[String, String]): LambdaExpression
+
+    def forceToString() : String
 }
 
 object LambdaExpression {
