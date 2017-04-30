@@ -5,12 +5,13 @@ import ru.nobird.scala.expression.intuitionistic.{Equation, TypeExpression, Type
 /**
   * Created by ruslandavletshin on 21/06/16.
   */
-case class Variable(x: String) extends LambdaExpression(x) {
+case class Variable(var x: String) extends LambdaExpression(x) {
 
+    override def copy(): Variable = Variable(x)
 
     override def substitute(v: String, expr: LambdaExpression): LambdaExpression =
         if (v == x)
-            expr
+            expr.copy()
         else
             this
 
@@ -21,7 +22,9 @@ case class Variable(x: String) extends LambdaExpression(x) {
     override def getAllVars: Set[String] = Set()
 
     override def rename(s: Map[String, String]): Variable = s.get(x) match {
-        case Some(x: String) => Variable(x)
+        case Some(x1: String) =>
+            x = x1
+            this
         case _ => this
     }
 

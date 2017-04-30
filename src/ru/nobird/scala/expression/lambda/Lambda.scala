@@ -5,7 +5,10 @@ import ru.nobird.scala.expression.intuitionistic.{Equation, TypeExpression, Type
 /**
   * Created by ruslandavletshin on 21/06/16.
   */
-case class Lambda(v: Variable, var ex: LambdaExpression) extends LambdaExpression("(\\" + v.toString + "." + ex.toString + ")") {
+case class Lambda(var v: Variable, var ex: LambdaExpression) extends LambdaExpression("(\\" + v.toString + "." + ex.toString + ")") {
+
+    override def copy(): LambdaExpression =
+        Lambda(v.copy(), ex.copy())
 
     override def forceToString(): String =
         "(\\" + v.forceToString() + "." + ex.forceToString() + ")"
@@ -37,8 +40,12 @@ case class Lambda(v: Variable, var ex: LambdaExpression) extends LambdaExpressio
         (e, tx -> tp)
     }
 
-    override def getAllVars: Set[String] = ex.getAllVars + v.toString
+    override def getAllVars: Set[String] = ex.getAllVars + v.forceToString()
 
-    override def rename(s: Map[String, String]): LambdaExpression =
-        Lambda(v.rename(s), ex.rename(s))
+
+    override def rename(s: Map[String, String]): LambdaExpression = {
+        v.rename(s)
+        ex.rename(s)
+        this
+    }
 }

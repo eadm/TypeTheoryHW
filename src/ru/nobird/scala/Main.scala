@@ -32,6 +32,7 @@ object Main {
 
 //        println(new HW2().solve(lambda))
 
+        val time = System.currentTimeMillis()
         if (args.length > 0) {
             getHWByArgs(args) match {
                 case Some(hw) =>
@@ -41,6 +42,8 @@ object Main {
                     println("Неверные аргументы")
             }
         }
+
+        println("Total: " + (System.currentTimeMillis() - time) + "ms")
 
 //        val lambda = "let bar = \\x.(let foo = \\y.x in foo) in bar"
 //

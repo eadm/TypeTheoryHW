@@ -7,6 +7,8 @@ import ru.nobird.scala.expression.intuitionistic.{Equation, TypeExpression}
 case class Let (x: Variable, a: LambdaExpression, b: LambdaExpression)
     extends LambdaExpression("let " + x + " = [" + a + "] in [" + b + "]") {
 
+    override def copy(): LambdaExpression = this
+
     override def forceToString(): String =
         "let " + x.forceToString() + " = [" + a.forceToString() + "] in [" + b.forceToString() + "]"
 
@@ -17,7 +19,7 @@ case class Let (x: Variable, a: LambdaExpression, b: LambdaExpression)
 
     override def escapeBrackets(): LambdaExpression = Let(x, a.escapeBrackets(), b.escapeBrackets())
 
-    override def getAllVars: Set[String] = a.getAllVars ++ b.getAllVars + x.toString
+    override def getAllVars: Set[String] = a.getAllVars ++ b.getAllVars + x.forceToString()
 
     override def rename(s: Map[String, String]): LambdaExpression =
         Let(x.rename(s), a.rename(s), b.rename(s))

@@ -4,6 +4,9 @@ import ru.nobird.scala.expression.intuitionistic.{Equation, TypeExpression, Type
 
 case class Application(var left: LambdaExpression, var right: LambdaExpression) extends LambdaExpression("(" + left + " "  + " " + right + ")") {
 
+    override def copy(): LambdaExpression =
+        Application(left.copy(), right.copy())
+
     override def forceToString(): String =
         "(" + left.forceToString() + " "  + " " + right.forceToString() + ")"
 
@@ -12,26 +15,23 @@ case class Application(var left: LambdaExpression, var right: LambdaExpression) 
         right = right.substitute(v, expr)
         this
     }
-//        Application(left.substitute(v, expr), right.substitute(v, expr))
 
     override def betaReduction(): Option[LambdaExpression] = left match {
         case Lambda(v, ex) =>
-            val collision = left.getAllVars & right.getAllVars - v.toString
+            val collision = left.getAllVars & right.getAllVars - v.forceToString()
             val s = collision.map{x => (x, LambdaExpression.getNextTypeVar)}.toMap
-            Some(ex.substitute(v.toString, right.rename(s)))
+            Some(ex.substitute(v.forceToString(), right.rename(s)))
 
         case _ =>
             left.betaReduction() match {
                 case Some(l) =>
                     left = l
                     Some(this)
-//                    Some(Application(l, right))
                 case _ =>
                     right.betaReduction() match {
                         case Some(r) =>
                             right = r
                             Some(this)
-//                            Some(Application(left, r))
                         case _ => None
                     }
             }
@@ -57,6 +57,9 @@ case class Application(var left: LambdaExpression, var right: LambdaExpression) 
 
     override def getAllVars: Set[String] = left.getAllVars ++ right.getAllVars
 
-    override def rename(s: Map[String, String]): LambdaExpression =
-        Application(left.rename(s), right.rename(s))
+    override def rename(s: Map[String, String]): LambdaExpression = {
+        left.rename(s)
+        right.rename(s)
+        this
+    }
 }

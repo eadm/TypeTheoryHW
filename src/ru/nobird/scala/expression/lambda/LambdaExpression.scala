@@ -15,6 +15,8 @@ abstract class LambdaExpression(s: String) extends Expression(s) {
 
     def getAllVars: Set[String]
 
+    def copy() : LambdaExpression
+
     def rename(s: Map[String, String]): LambdaExpression
 
     def forceToString() : String
@@ -30,7 +32,7 @@ object LambdaExpression {
                 case Some(expr) =>
                     e = expr
                     cc += 1
-                    if (cc % 1000 == 0) println(cc)
+                    if (cc % 1000 == 0) println(cc / 1000 + "k")
                 case _ => isNormalised = true
             }
         }
