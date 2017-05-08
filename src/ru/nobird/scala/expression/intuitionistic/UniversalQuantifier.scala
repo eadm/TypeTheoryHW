@@ -12,10 +12,13 @@ class UniversalQuantifier(private val v: TypeVariable, private val e: TypeExpres
     }
 
     override def insertTypeExpression(vars: Map[String, TypeExpression]): TypeExpression =
-        e.insertTypeExpression(vars - v.toString)
+        new UniversalQuantifier(v, e.insertTypeExpression(vars - v.toString))
 
     override def getVars: Set[String] = e.getVars
     override def getFreeVars: Set[String] = e.getFreeVars - v.toString
 
-    override def unwrap(): TypeExpression = e
+    override def unwrap(): TypeExpression = e match {
+        case e1: UniversalQuantifier => e1.unwrap()
+        case _ => e
+    }
 }

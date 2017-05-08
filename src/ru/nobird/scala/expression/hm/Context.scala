@@ -1,12 +1,11 @@
 package ru.nobird.scala.expression.hm
 
 import ru.nobird.scala.expression.intuitionistic.{TypeExpression, TypeVariable, UniversalQuantifier}
-import ru.nobird.scala.expression.lambda.{LambdaExpression, Variable}
 
 import scala.collection.immutable.HashMap
 
 
-case class Context(private val elems: HashMap[LambdaExpression, TypeExpression]) {
+case class Context(private val elems: HashMap[String, TypeExpression]) {
     def this() {
         this(HashMap())
     }
@@ -24,14 +23,14 @@ case class Context(private val elems: HashMap[LambdaExpression, TypeExpression])
 
     def ++(that: Context) = Context(elems ++: that.elems)
 
-    def -(key: Variable) = Context(elems - key)
+    def -(key: String) = Context(elems - key)
 
-    def +(p: (LambdaExpression, TypeExpression)) = Context(elems + p)
+    def +(p: (String, TypeExpression)) = Context(elems + p)
 
     def map(f: ((TypeExpression) => TypeExpression)): Context =
-        Context(elems.mapValues(f) ++: HashMap[LambdaExpression, TypeExpression]())
+        Context(elems.mapValues(f) ++: HashMap[String, TypeExpression]())
 
-    def get: (LambdaExpression) => Option[TypeExpression] = elems.get
+    def get: (String) => Option[TypeExpression] = elems.get
 
     override def toString: String = elems.toString()
 }

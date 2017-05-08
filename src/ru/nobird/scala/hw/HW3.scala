@@ -16,7 +16,7 @@ class HW3 extends HW {
         HMLambdaParser.parse(in) match {
             case Success(expr, _) =>
                 try {
-                    val (ctx, t) = W(Context(HashMap[LambdaExpression, TypeExpression]()), expr.escapeBrackets())
+                    val (ctx, t) = W(Context(HashMap[String, TypeExpression]()), expr.escapeBrackets())
                     ctx(t).toString
                 } catch {
                     case _: TypeInferenceException => "Лямбда-выражение не имеет типа."
@@ -29,39 +29,27 @@ class HW3 extends HW {
         expr match {
 
             case Application(e1, e2) =>
-                println("--------STR")
-                println(expr)
                 val (s1, t1) = W(ctx, e1)
                 val (s2, t2) = W(s1(ctx), e2)
 
-                println(s1)
-                println(t1)
-                println()
-
-                println(s2)
-                println(t2)
-
                 val beta = TypeVariable(LambdaExpression.getNextTypeVar)
                 val v = unify(s2(t1), t2 -> beta)
-
                 val s = v(s1(s2))
-                println()
-                println(s)
-                println("--------END")
+
                 (s, s(beta))
 
 
             case Lambda(x, e) =>
                 val beta = TypeVariable(LambdaExpression.getNextTypeVar)
-                val (s1, t1) = W(ctx - x + (x, beta), e)
+                val (s1, t1) = W(ctx - x.toString + (x.toString, beta), e)
+
                 (s1, s1(beta) -> t1)
 
             case Variable(x) =>
-                ctx.get(Variable(x)) match {
+                ctx.get(x) match {
                     case Some(t) =>
                         val vars = t.getVars -- t.getFreeVars
                         val tt = t.unwrap()
-
                         (new Substitution,
                             Substitution(vars.map { _ -> TypeVariable(LambdaExpression.getNextTypeVar)}.toMap)(tt))
 
@@ -72,8 +60,7 @@ class HW3 extends HW {
 
             case Let(x, e1, e2) =>
                 val (s1, t1) = W(ctx, e1)
-                val (s2, t2) = W(s1(ctx - x) + (x, s1(ctx.closure(t1))) , e2)
-
+                val (s2, t2) = W(s1(ctx - x.toString) + (x.toString, s1(ctx.closure(t1))) , e2)
 
                 (s2(s1), t2)
         }
@@ -82,24 +69,11 @@ class HW3 extends HW {
 
     private def unify(t1: TypeExpression, t2: TypeExpression): Substitution = {
         val ss = new EquationSystem(List(Equation(t1, t2)))
-        println(Equation(t1, t2))
         LambdaExpression.resolveEquationSystem(ss) match {
             case Some(sub) => Substitution(sub)
             case _ => throw new TypeInferenceException("can't solve equation system")
         }
     }
-//    (t1, t2) match {
-//            case (Implication(l1, r1), Implication(l2, r2)) =>
-//                //            new EquationSystem(List(Equation(t1, t2)))
-//                unify(l1, l2) ++! unify(r1, r2)
-//
-//            case (TypeVariable(x), _) =>
-//                Substitution(Map(x -> t2))
-//
-//            case (_, TypeVariable(x)) =>
-//                Substitution(Map(x -> t1))
-//        }
-//    }
 
 
 }
